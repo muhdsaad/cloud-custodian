@@ -1,0 +1,47 @@
+{
+  "policy": {
+    "name": "test-validator-2",
+    "description": "description 2",
+    "resource": "k8s.pod",
+    "mode": {
+      "type": "k8s-admission",
+      "on-match": "deny",
+      "operations": [
+        "CREATE"
+      ]
+    }
+  },
+  "version": "0.9.20",
+  "execution": {
+    "id": "8fb9963a-861f-4b82-975e-b1f468ee569f",
+    "start": 1669615099.0995307,
+    "end_time": 1669615099.0999746,
+    "duration": 0.0004439353942871094
+  },
+  "config": {
+    "region": "us-east-1",
+    "regions": [],
+    "cache": "",
+    "profile": null,
+    "account_id": null,
+    "assume_role": null,
+    "external_id": null,
+    "log_group": null,
+    "tracer": "default",
+    "metrics_enabled": false,
+    "metrics": null,
+    "output_dir": "",
+    "cache_period": 0,
+    "dryrun": false,
+    "authorization_file": null
+  },
+  "sys-stats": {
+    "snapshot_time": 0.00043702125549316406,
+    "num_fds": 1,
+    "read_count": 9,
+    "write_count": 1,
+    "write_bytes": 8192
+  },
+  "api-stats": {},
+  "metrics": []
+}

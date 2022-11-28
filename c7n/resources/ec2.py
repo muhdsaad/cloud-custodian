@@ -25,6 +25,7 @@ from c7n.filters import (
 )
 from c7n.filters.offhours import OffHour, OnHour
 import c7n.filters.vpc as net_filters
+from c7n.filters.cost import InfraCost
 
 from c7n.manager import resources
 from c7n import query, utils
@@ -495,6 +496,52 @@ class InstanceImage(ValueFilter, InstanceImageBase):
             # Match instead on empty skeleton?
             return False
         return self.match(image)
+
+
+@filters.register('infracost')
+class Ec2Cost(InfraCost):
+
+    def get_query(self):
+        # reference: https://gql.readthedocs.io/en/stable/usage/variables.html
+        return """
+            query ($region: String, $instanceType: String) {
+                products(
+                    filter: {
+                        vendorName: "aws",
+                        service: "AmazonEC2",
+                        productFamily: "Compute Instance",
+                        region: $region,
+                        attributeFilters: [
+                            { key: "instanceType", value: $instanceType }
+                            { key: "operatingSystem", value: "Linux" }
+                            { key: "tenancy", value: "Shared" }
+                            { key: "capacitystatus", value: "Used" }
+                            { key: "preInstalledSw", value: "NA" }
+                        ]
+                    },
+                ) {
+                    prices(
+                        filter: {purchaseOption: "on_demand"}
+                    ) { USD, unit, description, purchaseOption }
+                }
+            }
+        """
+
+    def get_params(self, resource):
+        params = {
+            "region": resource["Placement"]["AvailabilityZone"][:-1],
+            "instanceType": resource["InstanceType"],
+        }
+        return params
+
+    def get_quantity(self, resource):
+        hours = self.data.get("quantity")
+        # NOTE use instance age if quantity is not set
+        if not hours:
+            launchTime = InstanceAgeFilter({}, self.manager).get_resource_date(resource)
+            terminateTime = StateTransitionAge({}, self.manager).get_resource_date(resource)
+            hours = round((terminateTime - launchTime).total_seconds() / 3600, 4)
+            return hours
 
 
 @filters.register('offhour')

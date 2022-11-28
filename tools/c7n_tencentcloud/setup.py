@@ -52,7 +52,7 @@ setup_kwargs = {
     'author': 'Cloud Custodian Project',
     'author_email': 'cloud-custodian@googlegroups.com',
     'project_urls': {
-       'Homepage': 'None',
+       'Homepage': 'https://cloudcustodian.io',
        'Documentation': 'https://cloudcustodian.io/docs/',
        'Source': 'https://github.com/cloud-custodian/cloud-custodian',
        'Issue Tracker': 'https://github.com/cloud-custodian/cloud-custodian/issues',

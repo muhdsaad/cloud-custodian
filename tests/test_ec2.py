@@ -8,6 +8,7 @@ import datetime
 from dateutil import tz
 import jmespath
 from mock import mock
+from unittest.mock import patch
 
 from c7n.testing import mock_datetime_now
 from c7n.exceptions import PolicyValidationError, ClientError
@@ -161,6 +162,34 @@ def test_ec2_stop_protection_above_botocore_version_validation(test, botocore_ve
             },
         )
         policy.validate()
+
+
+def test_ec2_cost(test):
+    aws_region = 'us-east-1'
+    session_factory = test.replay_flight_data('ec2_cost', region=aws_region)
+    policy = test.load_policy(
+        {
+            "name": "ec2-cost",
+            "resource": "ec2",
+            "filters": [{
+                "type": "infracost",
+                "op": "greater-than",
+                "value": 5,
+                "quantity": 730,
+            }]
+        },
+        session_factory=session_factory,
+        config={'region': aws_region},
+    )
+    with patch("c7n.filters.cost.InfraCost.invoke_infracost") as infracost:
+        infracost.side_effect = [
+            {'USD': 0.0066, 'description': '$0.0066 per On Demand Linux t3.nano Instance Hour'},
+            {'USD': 0.0528, 'description': '$0.0528 per On Demand Linux t3.medium Instance Hour'},
+        ]
+        resources = policy.run()
+    test.assertEqual(len(resources), 1)
+    assert (resources[0]["c7n:Cost"].items() >= {'USD': 38.544,
+        'description': '$0.0528 per On Demand Linux t3.medium Instance Hour'}.items())
 
 
 class TestEc2NetworkLocation(BaseTest):

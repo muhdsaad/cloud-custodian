@@ -20,3 +20,7 @@ from .iamaccess import CrossAccountAccessFilter, PolicyChecker
 from .iamanalyzer import AccessAnalyzer
 from .metrics import MetricsFilter, ShieldMetrics
 from .vpc import DefaultVpcBase
+
+# Cost Annotation for Cost Filter
+
+COST_ANNOTATION_KEY = "c7n:Cost"

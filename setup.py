@@ -18,6 +18,7 @@ install_requires = \
 ['argcomplete>=1.12.3',
  'boto3>=1.12.31,<2.0.0',
  'docutils>=0.14,<0.18',
+ 'gql[requests]>=3.4.0,<4.0.0',
  'importlib-metadata>=4.11.1',
  'jsonschema>=3.0.0',
  'python-dateutil>=2.8.2,<3.0.0',
